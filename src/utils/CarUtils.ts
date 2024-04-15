@@ -14,3 +14,11 @@ export function modifyCarData(carsData: CarModel[]): CarModel[] {
 
   return modifiedCars
 }
+
+export function getCarsOnCurrentPage(
+  carsList: CarModel[],
+  currentPage: number,
+  carsPerPage: number
+): CarModel[] {
+  return carsList?.slice(currentPage * carsPerPage, currentPage * carsPerPage + carsPerPage)
+}
