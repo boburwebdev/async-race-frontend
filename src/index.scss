@@ -1,16 +1,40 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+* {
+  padding: 0;
   margin: 0;
-  display: flex;
-  min-width: 500px;
+  box-sizing: border-box;
+}
+
+body {
+  color: #222222;
+  font-family: 'Sora', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Bevan', serif;
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  min-width: 500px;
 }
