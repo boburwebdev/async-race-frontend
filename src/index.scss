@@ -17,14 +17,10 @@ body {
   line-height: 1.5;
   font-weight: 400;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1 {
   font-family: 'Bevan', serif;
 }
 
@@ -32,9 +28,51 @@ ul {
   list-style: none;
 }
 
+input {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
 .container {
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   min-width: 500px;
+}
+
+.btn {
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: .3;
+  }
+
+  &__small {
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  &__green {
+    color: #16a085;
+    border-color: #16a085;
+  }
+
+  &__gray {
+    color: #7f8c8d;
+    border-color: #7f8c8d;
+  }
+
+  &__red {
+    color: #e10600;
+    border-color: #e10600;
+  }
 }
