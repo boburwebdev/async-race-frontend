@@ -171,3 +171,52 @@ export async function setEngineToDriveMode(id: number) {
     throw err
   }
 }
+
+export async function createWinner(carId: number, time: number) {
+  try {
+    const response = await fetch(baseUrl + '/winners/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: carId,
+        wins: 1,
+        time: time,
+      }),
+    })
+
+    if (response.ok) {
+      const newWinnerData = await response.json()
+      return newWinnerData
+    }
+
+    // throw new Error(`API response error: ${response.status}`);
+  } catch (err) {
+    throw err
+  }
+}
+
+export async function updateWinner(carId: number, numberOfWins: number, time: number) {
+  try {
+    const response = await fetch(baseUrl + '/winners/' + carId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        wins: numberOfWins,
+        time: time,
+      }),
+    })
+
+    if (response.ok) {
+      const updatedWinnerData = response.json()
+      return updatedWinnerData
+    }
+
+    // throw new Error(`API response error: ${response.status}`);
+  } catch (err) {
+    throw err
+  }
+}
