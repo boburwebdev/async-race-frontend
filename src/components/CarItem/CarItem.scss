@@ -1,0 +1,51 @@
+.car {
+  padding: 20px 0;
+  border-top: 3px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+
+  &:last-child {
+    border-bottom: 3px solid #333;
+  }
+
+  &__controls,
+  &__engine {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__image-box {
+    flex: 1;
+    text-align: left;
+  }
+
+  &__image.finished-race {
+    transform: translateX(calc(100% - 60px));
+  }
+
+  &__name {
+    font-size: 30px;
+    text-transform: uppercase;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+  }
+}
+
+.animate-left-to-right {
+  animation: slide-left-to-right ease-in-out;
+}
+
+@keyframes slide-left-to-right {
+  from {
+    transform: translateX(0); /* Start element off-screen to the left */
+  }
+  to {
+    transform: translateX(calc(100% - 60px)); /* Move element to its final position on the right */
+  }
+}

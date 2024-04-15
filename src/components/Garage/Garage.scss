@@ -1,0 +1,76 @@
+.garage {
+  padding: 25px 0;
+
+  &__title {
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 46px;
+    text-transform: uppercase;
+    margin: 0 0 15px;
+  }
+
+  &__menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    &-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  &__race-controls {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin: 0 0 20px 0;
+    padding: 20px 0;
+    border-top: 3px solid #333;
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn__race-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  &__input {
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #7f8c8d;
+
+    &-color {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-color: transparent;
+      width: 24px;
+      height: 25px;
+      padding: 0px 1px;
+      border: 1px solid #7f8c8d;
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, .1);
+      border-radius: 2px;
+      cursor: pointer;
+      
+      &::-webkit-color-swatch {
+        border: none;
+        border-radius: 2px;
+      }
+    }
+  }
+}
