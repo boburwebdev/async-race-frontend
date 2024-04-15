@@ -14,3 +14,8 @@ export interface CarModel {
   isRaceFinished: boolean
   raceDuration: number
 }
+
+export interface RaceDuration {
+  velocity: number
+  distance: number
+}

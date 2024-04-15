@@ -13,6 +13,7 @@ interface GarageProps {
   updateCar: (carId: number, name: string, color: string) => Promise<void>
   startEngine: (carId: number) => Promise<void>
   stopEngine: (carId: number) => Promise<void>
+  startRace: () => Promise<void>
   generateCars: () => Promise<void>
   clickPrev: () => void
   clickNext: () => void
@@ -26,9 +27,10 @@ const Garage: React.FC<GarageProps> = ({
   updateCar,
   startEngine,
   stopEngine,
+  startRace,
   generateCars,
   clickPrev,
-  clickNext
+  clickNext,
 }) => {
   const [carName, setCarName] = useState<string>('')
   const [carColor, setCarColor] = useState<string>('#f6b73c')
@@ -97,15 +99,15 @@ const Garage: React.FC<GarageProps> = ({
   }
 
   const handleClickPaginationPrev = () => {
-    clickPrev();
+    clickPrev()
   }
 
   const handleClickPaginationNext = () => {
-    clickNext();
+    clickNext()
   }
 
   const handleClickRace = () => {
-    console.log('clicked race')
+    startRace()
   }
 
   const handleClickReset = () => {

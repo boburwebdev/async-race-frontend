@@ -4,6 +4,7 @@ import Garage from './components/Garage/Garage'
 import { CarModel, WinnerModel } from './models/Models'
 import { modifyWinnerData } from './utils/WinnerUtils'
 import { generateRandomCarName, generateRandomHexColor } from './utils/RandomUtils'
+import { calculateRaceDuration, getRaceWinner, storeRaceWinnerResults } from './utils/RaceUtils'
 import {
   getCars,
   getWinners,
@@ -16,8 +17,9 @@ import {
 } from './utils/APIUtils'
 import { config } from './config/config'
 import './App.scss'
+import { getCarsOnCurrentPage } from './utils/CarUtils'
 
-const { numberOfGeneratedCars } = config
+const { numberOfGeneratedCars, carsPerPageInGarage } = config
 
 function App() {
   const [showGarage, setShowGarage] = useState<boolean>(true)
@@ -137,6 +139,24 @@ function App() {
     }
   }
 
+  const handleClickRace = async () => {
+    const carsThatMadeIt: CarModel[] = []
+
+    try {
+      const filteredCars: (CarModel | null)[] = await filterCarsThatMadeIt(carsThatMadeIt)
+      const results: (CarModel | null)[] = filteredCars?.filter((item: CarModel | null): boolean =>
+        Boolean(item)
+      )
+      let winner: CarModel | undefined = getRaceWinner(results)
+
+      if (winner) {
+        await storeRaceWinnerResults(winnersList, winner)
+      }
+    } catch (err) {
+      console.log('error with filteredCars: ', err)
+    }
+  }
+
   const handleClickStopEngine = async (carId: number) => {
     try {
       const engineData = await stopCarEngine(carId)
@@ -170,11 +190,53 @@ function App() {
       setCurrentGaragePage(prevVal => prevVal - 1)
     }
   }
+
   const handleClickGarageNext = () => {
     const result = carsList.length > 7 * (currentGaragePage + 1)
     if (result) {
       setCurrentGaragePage(prevVal => prevVal + 1)
     }
+  }
+
+  const filterCarsThatMadeIt = async (carsThatMadeIt: CarModel[]) => {
+    const carsOnCurrentPage = getCarsOnCurrentPage(carsList, currentGaragePage, carsPerPageInGarage)
+    return await Promise.all(
+      carsOnCurrentPage.map(async car => {
+        let duration: number
+        setCarsList(prevList =>
+          prevList.map(item => (item.id === car.id ? { ...item, isAnimated: true } : item))
+        )
+        try {
+          const engineStartData = await startCarEngine(car.id)
+          if (engineStartData) {
+            duration = calculateRaceDuration(engineStartData)
+            setCarsList(prevList =>
+              prevList.map(item =>
+                item.id === car.id
+                  ? { ...item, raceDuration: duration, isRaceFinished: true }
+                  : item
+              )
+            )
+            try {
+              const driveModeData = await setEngineToDriveMode(car.id)
+              if (driveModeData.success) {
+                carsThatMadeIt.push({ ...car, raceDuration: duration })
+                return { ...car, raceDuration: duration }
+              }
+            } catch (err) {
+              setCarsList(prevList =>
+                prevList.map(item =>
+                  item.id === car.id ? { ...item, raceDuration: 0, isRaceFinished: false } : item
+                )
+              )
+            }
+          }
+          return null
+        } catch (err) {
+          return null
+        }
+      })
+    )
   }
 
   return (
@@ -214,6 +276,7 @@ function App() {
               updateCar={handleClickUpdateCar}
               startEngine={handleClickStartEngine}
               stopEngine={handleClickStopEngine}
+              startRace={handleClickRace}
               generateCars={handleClickGenerateCars}
               clickPrev={handleClickGaragePrev}
               clickNext={handleClickGarageNext}
