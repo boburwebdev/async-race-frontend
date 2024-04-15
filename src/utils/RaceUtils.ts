@@ -43,5 +43,5 @@ export async function storeRaceWinnerResults(winnersList: WinnerModel[], winner:
 }
 
 export function convertRaceTimeToSeconds(raceTime: number | undefined) {
-  return raceTime ? Number(Number(raceTime / 1000).toFixed(2)) : 0;
+  return raceTime ? Number(Number(raceTime / 1000).toFixed(2)) : 0
 }

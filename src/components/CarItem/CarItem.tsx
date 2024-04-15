@@ -56,15 +56,27 @@ const CarItem: React.FC<CarItemProps> = ({
   return (
     <div className="car">
       <div className="car__controls">
-        <button className='btn btn__small btn__green' onClick={handleClickEditCar}>Select</button>
-        <button className='btn btn__small btn__red' onClick={handleClickRemoveCar}>Remove</button>
+        <button className="btn btn__small btn__green" onClick={handleClickEditCar}>
+          Select
+        </button>
+        <button className="btn btn__small btn__red" onClick={handleClickRemoveCar}>
+          Remove
+        </button>
       </div>
 
       <div className="car__engine">
-        <button className='btn btn__small btn__green' onClick={handleClickStartEngine} disabled={isAnimated}>
+        <button
+          className="btn btn__small btn__green"
+          onClick={handleClickStartEngine}
+          disabled={isAnimated}
+        >
           Start
         </button>
-        <button className='btn btn__small btn__red' onClick={handleClickStopEngine} disabled={!isAnimated}>
+        <button
+          className="btn btn__small btn__red"
+          onClick={handleClickStopEngine}
+          disabled={!isAnimated}
+        >
           Stop
         </button>
       </div>
