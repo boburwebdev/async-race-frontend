@@ -38,7 +38,6 @@ input {
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  min-width: 500px;
 }
 
 .section__title {
@@ -61,7 +60,7 @@ input {
 
   &:disabled {
     cursor: not-allowed;
-    opacity: .3;
+    opacity: 0.3;
   }
 
   &__small {
@@ -82,5 +81,113 @@ input {
   &__red {
     color: #e10600;
     border-color: #e10600;
+  }
+}
+
+@media (max-width: 1300px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .car__name {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 1170px) {
+  .garage {
+    &__race-controls,
+    &__generate-cars {
+      order: 2;
+    }
+
+    &__add-new-car,
+    &__edit-car {
+      order: 1;
+    }
+
+    &__menu {
+      justify-content: flex-start;
+    }
+
+    .garage__race-controls {
+      margin-left: auto;
+
+      .btn {
+        padding: 7px 10px;
+      }
+    }
+
+    .btn {
+      padding: 10px;
+    }
+    
+    .btn__small {
+      padding: 5px;
+    }
+  }
+}
+
+@media (max-width: 1040px) {
+  .garage {
+    .garage__race-controls {
+      margin-left: unset;
+    }
+  }
+}
+
+@media (max-width: 860px) {
+  .modal__content {
+    max-width: 80%;
+  }
+
+  .top__logo {
+    font-size: 34px;
+  }
+
+  .top__menu-item {
+    font-size: 14px;
+    padding: 0 8px 4px 2px;
+  }
+
+  .section__title {
+    font-size: 30px;
+    line-height: 36px;
+    margin-bottom: 30px;
+  }
+
+  .garage {
+    &__input-brand {
+      width: 120px;
+      padding: 5px 10px;
+    }
+  }
+
+  .car__name {
+    width: 140px;
+    font-size: 18px;
+    left: 220px;
+    transform: translate(0, -50%);
+    text-transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .garage {
+    &__menu {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 25px;
+      margin-bottom: 20px;
+
+      &-form {
+        width: 100%;
+      }
+    }
+
+    &__input-brand {
+      width: 280px;
+      padding: 5px 10px;
+    }
   }
 }
