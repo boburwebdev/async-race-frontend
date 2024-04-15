@@ -1,13 +1,36 @@
 import React from 'react'
-import { WinnerModel } from '../../models/Models'
 import WinnersItem from '../WinnersItem/WinnersItem'
+import { WinnerModel } from '../../models/Models'
+import { config } from '../../config/config'
 import './Winners.scss'
+
+const { carsPerPageInWinners } = config
 
 interface WinnersProps {
   winnersList: WinnerModel[]
+  currentPage: number
+  clickPrev: () => void
+  clickNext: () => void
 }
 
-const Winners: React.FC<WinnersProps> = ({ winnersList }) => {
+const Winners: React.FC<WinnersProps> = ({ winnersList, currentPage, clickPrev, clickNext }) => {
+  const handleClickPaginationPrev = () => {
+    clickPrev()
+  }
+
+  const handleClickPaginationNext = () => {
+    clickNext()
+  }
+
+  let winnersOnCurrentPage: WinnerModel[] = []
+
+  if (winnersList) {
+    winnersOnCurrentPage = winnersList?.slice(
+      currentPage * carsPerPageInWinners,
+      currentPage * carsPerPageInWinners + carsPerPageInWinners
+    )
+  }
+
   return (
     <div className="winners">
       <h3 className="section__title winners__title">Winners</h3>
@@ -21,7 +44,7 @@ const Winners: React.FC<WinnersProps> = ({ winnersList }) => {
       </div>
 
       <div className="winners__content">
-        {winnersList.map(winnerItem => {
+        {winnersOnCurrentPage.map(winnerItem => {
           return (
             <WinnersItem
               key={winnerItem.id}
@@ -33,6 +56,32 @@ const Winners: React.FC<WinnersProps> = ({ winnersList }) => {
             />
           )
         })}
+      </div>
+
+      <div className="winners__bottom">
+        <div className="winners__total-cars">
+          <h3>
+            Total Cars:
+            <span> {winnersList.length}</span>
+          </h3>
+        </div>
+        <div className="winners__pagination">
+          <button
+            className="btn btn__pagination"
+            onClick={handleClickPaginationPrev}
+            disabled={currentPage === 0}
+          >
+            Prev
+          </button>
+          <span>{currentPage + 1}</span>
+          <button
+            className="btn btn__pagination"
+            onClick={handleClickPaginationNext}
+            disabled={winnersList.length <= carsPerPageInWinners * (currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   )

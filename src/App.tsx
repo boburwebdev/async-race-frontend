@@ -26,12 +26,18 @@ import { getCarsOnCurrentPage } from './utils/CarUtils'
 import Winners from './components/Winners/Winners'
 import Modal from './components/Modal/Modal'
 
-const { numberOfGeneratedCars, carsPerPageInGarage } = config
+const { numberOfGeneratedCars, carsPerPageInGarage, carsPerPageInWinners } = config
 
 function App() {
   const [showGarage, setShowGarage] = useState<boolean>(true)
   const [carsList, setCarsList] = useState<CarModel[]>([])
+  const [carName, setCarName] = useState<string>('')
+  const [carNameUpdate, setCarNameUpdate] = useState<string>('')
+  const [carColor, setCarColor] = useState<string>('#000000')
+  const [carColorUpdate, setCarColorUpdate] = useState<string>('#000000')
+  const [selectedCarId, setSelectedCarId] = useState<number>(0)
   const [currentGaragePage, setCurrentGaragePage] = useState<number>(0)
+  const [currentWinnersPage, setCurrentWinnersPage] = useState<number>(0)
   const [winnersList, setWinnersList] = useState<WinnerModel[]>([])
   const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false)
   const [winner, setWinner] = useState<CarModel | undefined>()
@@ -74,6 +80,19 @@ function App() {
     setShowGarage(false)
   }
 
+  const handleChangeCarName = (carName: string) => {
+    setCarName(carName)
+  }
+  const handleChangeCarNameUpdate = (carName: string) => {
+    setCarNameUpdate(carName)
+  }
+  const handleChangeCarColor = (carName: string) => {
+    setCarColor(carName)
+  }
+  const handleChangeCarColorUpdate = (carName: string) => {
+    setCarColorUpdate(carName)
+  }
+
   const handleClickAddNewCar = async (carName: string, carColor: string) => {
     try {
       const carData = await submitNewCar(carName, carColor)
@@ -82,6 +101,9 @@ function App() {
           ...prevList,
           { ...carData, isAnimated: false, isFinished: false, raceDuration: 0 },
         ])
+
+        setCarName('')
+        setCarColor('#000000')
       }
     } catch (err) {
       console.error("Couldn't add new car: ", err)
@@ -104,10 +126,17 @@ function App() {
       const carData = await updateCar(carId, carName, carColor)
       if (carData) {
         setCarsList(prevList => prevList.map(car => (car.id === carId ? { ...carData } : car)))
+        setCarNameUpdate('')
+        setCarColorUpdate('#000000')
+        setSelectedCarId(0)
       }
     } catch (err) {
       console.error("Couldn't update the car: ", err)
     }
+  }
+
+  const handleClickEditCar = (id: number) => {
+    setSelectedCarId(id)
   }
 
   const handleClickStartEngine = async (carId: number) => {
@@ -230,9 +259,22 @@ function App() {
   }
 
   const handleClickGarageNext = () => {
-    const result = carsList.length > 7 * (currentGaragePage + 1)
+    const result = carsList.length > carsPerPageInGarage * (currentGaragePage + 1)
     if (result) {
       setCurrentGaragePage(prevVal => prevVal + 1)
+    }
+  }
+
+  const handleClickWinnersPrev = () => {
+    if (currentWinnersPage > 0) {
+      setCurrentWinnersPage(prevVal => prevVal - 1)
+    }
+  }
+
+  const handleClickWinnersNext = () => {
+    const result = winnersList.length > carsPerPageInWinners * (currentWinnersPage + 1)
+    if (result) {
+      setCurrentWinnersPage(prevVal => prevVal + 1)
     }
   }
 
@@ -339,9 +381,24 @@ function App() {
               generateCars={handleClickGenerateCars}
               clickPrev={handleClickGaragePrev}
               clickNext={handleClickGarageNext}
+              carName={carName}
+              carNameUpdate={carNameUpdate}
+              carColor={carColor}
+              carColorUpdate={carColorUpdate}
+              selectedCarId={selectedCarId}
+              setCarName={handleChangeCarName}
+              setCarNameUpdate={handleChangeCarNameUpdate}
+              setCarColor={handleChangeCarColor}
+              setCarColorUpdate={handleChangeCarColorUpdate}
+              setSelectedCarId={handleClickEditCar}
             />
           ) : (
-            <Winners winnersList={winnersList} />
+            <Winners
+              winnersList={winnersList}
+              currentPage={currentWinnersPage}
+              clickPrev={handleClickWinnersPrev}
+              clickNext={handleClickWinnersNext}
+            />
           )}
         </div>
       </div>

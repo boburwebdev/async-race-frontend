@@ -1,13 +1,20 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
 
 import CarItem from '../CarItem/CarItem'
 import { CarModel } from '../../models/Models'
-
+import { config } from '../../config/config'
 import './Garage.scss'
+
+const { carsPerPageInGarage } = config
 
 interface GarageProps {
   carsList: CarModel[]
   currentPage: number
+  carName: string
+  carNameUpdate: string
+  carColor: string
+  carColorUpdate: string
+  selectedCarId: number
   addNewCar: (name: string, color: string) => Promise<void>
   deleteCar: (carId: number) => Promise<void>
   updateCar: (carId: number, name: string, color: string) => Promise<void>
@@ -18,11 +25,21 @@ interface GarageProps {
   generateCars: () => Promise<void>
   clickPrev: () => void
   clickNext: () => void
+  setCarName: (carName: string) => void
+  setCarNameUpdate: (carName: string) => void
+  setCarColor: (carName: string) => void
+  setCarColorUpdate: (carName: string) => void
+  setSelectedCarId: (carId: number) => void
 }
 
 const Garage: React.FC<GarageProps> = ({
   carsList,
   currentPage,
+  carName,
+  carNameUpdate,
+  carColor,
+  carColorUpdate,
+  selectedCarId,
   addNewCar,
   deleteCar,
   updateCar,
@@ -33,13 +50,12 @@ const Garage: React.FC<GarageProps> = ({
   generateCars,
   clickPrev,
   clickNext,
+  setCarName,
+  setCarNameUpdate,
+  setCarColor,
+  setCarColorUpdate,
+  setSelectedCarId
 }) => {
-  const [carName, setCarName] = useState<string>('')
-  const [carColor, setCarColor] = useState<string>('#f6b73c')
-  const [carId, setCarId] = useState<number>(0)
-  const [carNameUpdate, setCarNameUpdate] = useState<string>('')
-  const [carColorUpdate, setCarColorUpdate] = useState<string>('#000000')
-
   const inputRefName = useRef<HTMLInputElement>(null)
   const inputRefColor = useRef<HTMLInputElement>(null)
 
@@ -62,25 +78,19 @@ const Garage: React.FC<GarageProps> = ({
   const handleSubmitAddCar = async (e: React.FormEvent) => {
     e.preventDefault()
     addNewCar(carName, carColor)
-    setCarName('')
-    setCarColor('#000000')
   }
 
   const handleSubmitUpdateCar = async (e: React.FormEvent) => {
     e.preventDefault()
-    updateCar(carId, carNameUpdate, carColorUpdate)
-
-    setCarNameUpdate('')
-    setCarColorUpdate('#000000')
-    setCarId(0)
+    updateCar(selectedCarId, carNameUpdate, carColorUpdate)
   }
 
   const handleClickEditCar = (id: number) => {
     const selectedCar = carsList.find(carItem => carItem.id === id)
     if (selectedCar) {
-      setCarId(id)
       setCarNameUpdate(selectedCar.name)
       setCarColorUpdate(selectedCar.color)
+      setSelectedCarId(id)
     }
   }
 
@@ -119,7 +129,10 @@ const Garage: React.FC<GarageProps> = ({
   let carsOnCurrentPage: CarModel[] = []
 
   if (carsList) {
-    carsOnCurrentPage = carsList?.slice(currentPage * 7, currentPage * 7 + 7)
+    carsOnCurrentPage = carsList?.slice(
+      currentPage * carsPerPageInGarage,
+      currentPage * carsPerPageInGarage + carsPerPageInGarage
+    )
   }
 
   return (
@@ -238,11 +251,19 @@ const Garage: React.FC<GarageProps> = ({
           </h3>
         </div>
         <div className="garage__pagination">
-          <button className="btn btn__pagination" onClick={handleClickPaginationPrev}>
+          <button
+            className="btn btn__pagination"
+            onClick={handleClickPaginationPrev}
+            disabled={currentPage === 0}
+          >
             Prev
           </button>
           <span>{currentPage + 1}</span>
-          <button className="btn btn__pagination" onClick={handleClickPaginationNext}>
+          <button
+            className="btn btn__pagination"
+            onClick={handleClickPaginationNext}
+            disabled={carsList.length <= carsPerPageInGarage * (currentPage + 1)}
+          >
             Next
           </button>
         </div>
