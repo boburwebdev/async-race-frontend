@@ -54,7 +54,7 @@ const Garage: React.FC<GarageProps> = ({
   setCarNameUpdate,
   setCarColor,
   setCarColorUpdate,
-  setSelectedCarId
+  setSelectedCarId,
 }) => {
   const inputRefName = useRef<HTMLInputElement>(null)
   const inputRefColor = useRef<HTMLInputElement>(null)

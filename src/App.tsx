@@ -19,6 +19,7 @@ import {
   startCarEngine,
   stopCarEngine,
   setEngineToDriveMode,
+  deleteWinner,
 } from './utils/APIUtils'
 import { config } from './config/config'
 import './App.scss'
@@ -112,9 +113,14 @@ function App() {
 
   const handleClickDeleteCar = async (carId: number) => {
     try {
-      const response = await deleteCar(carId)
-      if (response?.ok) {
+      const responseOne = await deleteCar(carId)
+      const responseTwo = await deleteWinner(carId)
+      if (responseOne?.ok) {
         setCarsList(prevList => prevList.filter(item => item.id !== carId))
+      }
+
+      if (responseTwo?.ok) {
+        setWinnersList(prevList => prevList.filter(item => item.id !== carId))
       }
     } catch (err) {
       console.error("Couldn't delete the car: ", err)

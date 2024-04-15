@@ -86,7 +86,7 @@ export async function updateCar(carId: number, carName: string, carColor: string
 export async function deleteCar(id: number) {
   try {
     const response = await fetch(baseUrl + '/garage/' + id, {
-      method: 'Delete',
+      method: 'DELETE',
     })
 
     if (response.ok) {
@@ -213,6 +213,22 @@ export async function updateWinner(carId: number, numberOfWins: number, time: nu
     if (response.ok) {
       const updatedWinnerData = response.json()
       return updatedWinnerData
+    }
+
+    // throw new Error(`API response error: ${response.status}`);
+  } catch (err) {
+    throw err
+  }
+}
+
+export async function deleteWinner(carId: number) {
+  try {
+    const response = await fetch(baseUrl + '/winners/' + carId, {
+      method: 'DELETE',
+    })
+
+    if (response.ok) {
+      return response
     }
 
     // throw new Error(`API response error: ${response.status}`);
