@@ -4,7 +4,12 @@ import Garage from './components/Garage/Garage'
 import { CarModel, WinnerModel } from './models/Models'
 import { modifyWinnerData } from './utils/WinnerUtils'
 import { generateRandomCarName, generateRandomHexColor } from './utils/RandomUtils'
-import { calculateRaceDuration, getRaceWinner, storeRaceWinnerResults } from './utils/RaceUtils'
+import {
+  calculateRaceDuration,
+  getRaceWinner,
+  storeRaceWinnerResults,
+  convertRaceTimeToSeconds,
+} from './utils/RaceUtils'
 import {
   getCars,
   getWinners,
@@ -19,6 +24,7 @@ import { config } from './config/config'
 import './App.scss'
 import { getCarsOnCurrentPage } from './utils/CarUtils'
 import Winners from './components/Winners/Winners'
+import Modal from './components/Modal/Modal'
 
 const { numberOfGeneratedCars, carsPerPageInGarage } = config
 
@@ -27,6 +33,8 @@ function App() {
   const [carsList, setCarsList] = useState<CarModel[]>([])
   const [currentGaragePage, setCurrentGaragePage] = useState<number>(0)
   const [winnersList, setWinnersList] = useState<WinnerModel[]>([])
+  const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false)
+  const [winner, setWinner] = useState<CarModel | undefined>()
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -36,7 +44,7 @@ function App() {
           setCarsList(carsData)
         }
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
 
@@ -112,9 +120,6 @@ function App() {
 
       if (carEngine) {
         const duration = carEngine.velocity ? carEngine.distance / carEngine.velocity : 0
-        console.log('duration: ', duration)
-        console.log('data: ', carEngine)
-
         setCarsList(prevList =>
           prevList.map(item =>
             item.id === carId ? { ...item, raceDuration: duration, isRaceFinished: true } : item
@@ -151,13 +156,15 @@ function App() {
       let winner: CarModel | undefined = getRaceWinner(results)
 
       if (winner) {
+        setWinner(winner)
+        setShowWinnerModal(true)
         await storeRaceWinnerResults(winnersList, winner)
         const winnersData = await getWinners()
         const modifiedWinnersData = modifyWinnerData(carsList, winnersData)
         setWinnersList(modifiedWinnersData)
       }
     } catch (err) {
-      console.log('error with filteredCars: ', err)
+      console.error('error with filteredCars: ', err)
     }
   }
 
@@ -277,8 +284,21 @@ function App() {
     )
   }
 
+  const handleClickCloseModal = () => {
+    setShowWinnerModal(false)
+  }
+
   return (
     <>
+      <Modal isOpen={showWinnerModal} closeModal={handleClickCloseModal}>
+        <h3 className="modal__title">Winner</h3>
+        <div className="modal__winner-name">
+          Model: <span>{winner?.name}</span>
+        </div>
+        <div className="modal__winner-time">
+          Time: <span>{convertRaceTimeToSeconds(winner?.raceDuration)}sec</span>
+        </div>
+      </Modal>
       <div className="top">
         <div className="container">
           <div className="top__inner">
