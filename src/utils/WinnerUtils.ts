@@ -6,7 +6,6 @@ export function modifyWinnerData(carsList: CarModel[], winnersList: WinnerModel[
     return car
       ? {
           ...winnerItem,
-          time: (Number(winnerItem.time) / 1000).toFixed(2),
           color: car?.color,
           modelName: car?.name,
         }

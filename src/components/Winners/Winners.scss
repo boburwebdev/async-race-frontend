@@ -1,0 +1,33 @@
+.winners {
+  padding: 25px 0;
+
+  &__headings {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 2px solid black;
+  }
+}
+
+.winners__headings-number,
+.winners__item-number {
+  flex-basis: 10%;
+}
+
+.winners__headings-image,
+.winners__item-image {
+  flex-basis: 20%;
+}
+.winners__headings-name,
+.winners__item-name {
+  flex-basis: 40%;
+}
+.winners__headings-wins,
+.winners__item-wins {
+  flex-basis: 15%;
+}
+
+.winners__headings-time,
+.winners__item-time {
+  flex-basis: 15%;
+}

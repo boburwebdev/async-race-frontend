@@ -41,6 +41,14 @@ input {
   min-width: 500px;
 }
 
+.section__title {
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 46px;
+  text-transform: uppercase;
+  margin: 0 0 15px;
+}
+
 .btn {
   background-color: transparent;
   font-family: inherit;

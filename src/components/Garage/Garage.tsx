@@ -124,7 +124,7 @@ const Garage: React.FC<GarageProps> = ({
 
   return (
     <div className="garage">
-      <h3 className="garage__title">Garage</h3>
+      <h3 className="section__title garage__title">Garage</h3>
       <div className="garage__menu">
         <div className="garage__race-controls">
           <button

@@ -18,6 +18,7 @@ import {
 import { config } from './config/config'
 import './App.scss'
 import { getCarsOnCurrentPage } from './utils/CarUtils'
+import Winners from './components/Winners/Winners'
 
 const { numberOfGeneratedCars, carsPerPageInGarage } = config
 
@@ -151,6 +152,9 @@ function App() {
 
       if (winner) {
         await storeRaceWinnerResults(winnersList, winner)
+        const winnersData = await getWinners()
+        const modifiedWinnersData = modifyWinnerData(carsList, winnersData)
+        setWinnersList(modifiedWinnersData)
       }
     } catch (err) {
       console.log('error with filteredCars: ', err)
@@ -310,7 +314,7 @@ function App() {
               clickNext={handleClickGarageNext}
             />
           ) : (
-            <h3>Winners</h3>
+            <Winners winnersList={winnersList} />
           )}
         </div>
       </div>
