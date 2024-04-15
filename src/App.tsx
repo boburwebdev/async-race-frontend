@@ -252,12 +252,19 @@ function App() {
               const driveModeData = await setEngineToDriveMode(car.id)
               if (driveModeData.success) {
                 carsThatMadeIt.push({ ...car, raceDuration: duration })
+                setCarsList(prevList =>
+                  prevList.map(item =>
+                    item.id === car.id ? { ...item, isRaceFinished: true, isAnimated: false } : item
+                  )
+                )
                 return { ...car, raceDuration: duration }
               }
             } catch (err) {
               setCarsList(prevList =>
                 prevList.map(item =>
-                  item.id === car.id ? { ...item, raceDuration: 0, isRaceFinished: false } : item
+                  item.id === car.id
+                    ? { ...item, raceDuration: 0, isRaceFinished: false, isAnimated: false }
+                    : item
                 )
               )
             }
