@@ -14,6 +14,7 @@ interface GarageProps {
   startEngine: (carId: number) => Promise<void>
   stopEngine: (carId: number) => Promise<void>
   startRace: () => Promise<void>
+  resetRace: () => Promise<void>
   generateCars: () => Promise<void>
   clickPrev: () => void
   clickNext: () => void
@@ -28,6 +29,7 @@ const Garage: React.FC<GarageProps> = ({
   startEngine,
   stopEngine,
   startRace,
+  resetRace,
   generateCars,
   clickPrev,
   clickNext,
@@ -111,7 +113,7 @@ const Garage: React.FC<GarageProps> = ({
   }
 
   const handleClickReset = () => {
-    console.log('clicked reset')
+    resetRace()
   }
 
   let carsOnCurrentPage: CarModel[] = []

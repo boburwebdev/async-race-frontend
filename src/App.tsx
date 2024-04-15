@@ -157,6 +157,33 @@ function App() {
     }
   }
 
+  const handleClickReset = async () => {
+    if (carsList) {
+      const carsOnCurrentPage = getCarsOnCurrentPage(
+        carsList,
+        currentGaragePage,
+        carsPerPageInGarage
+      )
+
+      carsOnCurrentPage.forEach(async car => {
+        try {
+          const carEngineData = await stopCarEngine(car.id)
+          if (carEngineData) {
+            setCarsList(prevList =>
+              prevList.map(item =>
+                item.id === car.id
+                  ? { ...item, isAnimated: false, isRaceFinished: false, raceDuration: 0 }
+                  : item
+              )
+            )
+          }
+        } catch (err) {
+          console.error("Couldn't stop the engine: ", err)
+        }
+      })
+    }
+  }
+
   const handleClickStopEngine = async (carId: number) => {
     try {
       const engineData = await stopCarEngine(carId)
@@ -277,6 +304,7 @@ function App() {
               startEngine={handleClickStartEngine}
               stopEngine={handleClickStopEngine}
               startRace={handleClickRace}
+              resetRace={handleClickReset}
               generateCars={handleClickGenerateCars}
               clickPrev={handleClickGaragePrev}
               clickNext={handleClickGarageNext}
