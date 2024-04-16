@@ -43,9 +43,9 @@
 
 @keyframes slide-left-to-right {
   from {
-    transform: translateX(0); /* Start element off-screen to the left */
+    transform: translateX(0);
   }
   to {
-    transform: translateX(calc(100% - 60px)); /* Move element to its final position on the right */
+    transform: translateX(calc(100% - 60px));
   }
 }
