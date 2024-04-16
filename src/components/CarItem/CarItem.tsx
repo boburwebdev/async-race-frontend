@@ -77,7 +77,7 @@ const CarItem: React.FC<CarItemProps> = ({
           className="btn btn__small btn__red"
           type="button"
           onClick={handleClickStopEngine}
-          disabled={!isAnimated}
+          disabled={!isRaceFinished}
         >
           Stop
         </button>
