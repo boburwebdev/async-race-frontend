@@ -350,6 +350,30 @@ const App = () => {
     }
   };
 
+  const handleClickSortWinners = (sortOption: string) => {
+    if (sortOption === 'winsAsc') {
+      const sortedWinners = [...winnersList].sort(
+        (a: WinnerModel, b: WinnerModel) => a.wins - b.wins,
+      );
+      setWinnersList(sortedWinners);
+    } else if (sortOption === 'winsDesc') {
+      const sortedWinners = [...winnersList].sort(
+        (a: WinnerModel, b: WinnerModel) => b.wins - a.wins,
+      );
+      setWinnersList(sortedWinners);
+    } else if (sortOption === 'timeAsc') {
+      const sortedWinners = [...winnersList].sort(
+        (a: WinnerModel, b: WinnerModel) => Number(a.time) - Number(b.time),
+      );
+      setWinnersList(sortedWinners);
+    } else if (sortOption === 'timeDesc') {
+      const sortedWinners = [...winnersList].sort(
+        (a: WinnerModel, b: WinnerModel) => Number(b.time) - Number(a.time),
+      );
+      setWinnersList(sortedWinners);
+    }
+  };
+
   const handleClickWinnersPrev = () => {
     if (currentWinnersPage > 0) {
       setCurrentWinnersPage((prevVal) => prevVal - 1);
@@ -441,6 +465,7 @@ const App = () => {
             <Winners
               winnersList={winnersList}
               currentPage={currentWinnersPage}
+              sortWinners={handleClickSortWinners}
               clickPrev={handleClickWinnersPrev}
               clickNext={handleClickWinnersNext}
             />

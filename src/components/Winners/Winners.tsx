@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import WinnersItem from '../WinnersItem/WinnersItem';
 import { WinnerModel } from '../../models/Models';
 import config from '../../config/config';
@@ -9,19 +9,34 @@ const { carsPerPageInWinners } = config;
 interface WinnersProps {
   winnersList: WinnerModel[];
   currentPage: number;
+  sortWinners: (option: string) => void;
   clickPrev: () => void;
   clickNext: () => void;
 }
 
 const Winners: React.FC<WinnersProps> = ({
-  winnersList, currentPage, clickPrev, clickNext,
+  winnersList,
+  currentPage,
+  sortWinners,
+  clickPrev,
+  clickNext,
 }) => {
+  const [sortOption, setSortOption] = useState<string>('winsAsc');
+
   const handleClickPaginationPrev = () => {
     clickPrev();
   };
 
   const handleClickPaginationNext = () => {
     clickNext();
+  };
+
+  const handleClickSortWinners = () => {
+    sortWinners(sortOption);
+  };
+
+  const handleChangeSelectSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(e.target.value);
   };
 
   let winnersOnCurrentPage: WinnerModel[] = [];
@@ -36,6 +51,22 @@ const Winners: React.FC<WinnersProps> = ({
   return (
     <div className="winners">
       <h3 className="section__title winners__title">Winners</h3>
+
+      <div className="winners__top">
+        <select className="select winners__select-sort" onChange={handleChangeSelectSort}>
+          <option value="winsAsc">Wins (Asc)</option>
+          <option value="winsDesc">Wins (Desc)</option>
+          <option value="timeAsc">Time (Asc)</option>
+          <option value="timeDesc">Time (Desc)</option>
+        </select>
+        <button
+          className="btn btn__green btn__sort-winners"
+          type="button"
+          onClick={handleClickSortWinners}
+        >
+          Sort
+        </button>
+      </div>
 
       <div className="winners__headings">
         <div className="winners__headings-column winners__headings-number">Number</div>

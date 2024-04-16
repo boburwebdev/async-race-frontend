@@ -1,10 +1,23 @@
 .winners {
   padding: 25px 0;
 
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  &__select-sort {
+    padding: 5px 10px;
+    border-radius: 8px;
+  }
+
   &__headings {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
+    border-top: 2px solid black;
     border-bottom: 2px solid black;
   }
 
