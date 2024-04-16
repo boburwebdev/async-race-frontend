@@ -1,7 +1,7 @@
-import { CarModel } from '../models/Models'
+import { CarModel } from '../models/Models';
 
 export function modifyCarData(carsData: CarModel[]): CarModel[] {
-  let modifiedCars: CarModel[] = []
+  let modifiedCars: CarModel[] = [];
 
   if (carsData) {
     modifiedCars = carsData.map((item: CarModel) => ({
@@ -9,16 +9,16 @@ export function modifyCarData(carsData: CarModel[]): CarModel[] {
       isAnimated: false,
       isFinished: false,
       raceDuration: 0,
-    }))
+    }));
   }
 
-  return modifiedCars
+  return modifiedCars;
 }
 
 export function getCarsOnCurrentPage(
   carsList: CarModel[],
   currentPage: number,
-  carsPerPage: number
+  carsPerPage: number,
 ): CarModel[] {
-  return carsList?.slice(currentPage * carsPerPage, currentPage * carsPerPage + carsPerPage)
+  return carsList?.slice(currentPage * carsPerPage, currentPage * carsPerPage + carsPerPage);
 }

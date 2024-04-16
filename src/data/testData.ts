@@ -1,5 +1,5 @@
 interface CarModel {
-  [make: string]: string[]
+  [make: string]: string[];
 }
 
 export const carMake: string[] = [
@@ -13,7 +13,7 @@ export const carMake: string[] = [
   'Toyota',
   'Porsche',
   'Dodge',
-]
+];
 
 export const carModel: CarModel = {
   Tesla: ['Model S', 'Model 3', 'Model X', 'Model Y'],
@@ -26,4 +26,4 @@ export const carModel: CarModel = {
   Toyota: ['Land Cruiser 300', 'Camry', 'Supra', 'Corolla', 'Highlander'],
   Porsche: ['911', 'Cayenne', 'Cayman', 'Panamera'],
   Dodge: ['Charger', 'Challenger', 'Viper'],
-}
+};

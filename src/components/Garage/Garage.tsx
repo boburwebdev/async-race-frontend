@@ -1,35 +1,35 @@
-import React, { useRef } from 'react'
+import React, { useRef } from 'react';
 
-import CarItem from '../CarItem/CarItem'
-import { CarModel } from '../../models/Models'
-import { config } from '../../config/config'
-import './Garage.scss'
+import CarItem from '../CarItem/CarItem';
+import { CarModel } from '../../models/Models';
+import config from '../../config/config';
+import './Garage.scss';
 
-const { carsPerPageInGarage } = config
+const { carsPerPageInGarage } = config;
 
 interface GarageProps {
-  carsList: CarModel[]
-  currentPage: number
-  carName: string
-  carNameUpdate: string
-  carColor: string
-  carColorUpdate: string
-  selectedCarId: number
-  addNewCar: (name: string, color: string) => Promise<void>
-  deleteCar: (carId: number) => Promise<void>
-  updateCar: (carId: number, name: string, color: string) => Promise<void>
-  startEngine: (carId: number) => Promise<void>
-  stopEngine: (carId: number) => Promise<void>
-  startRace: () => Promise<void>
-  resetRace: () => Promise<void>
-  generateCars: () => Promise<void>
-  clickPrev: () => void
-  clickNext: () => void
-  setCarName: (carName: string) => void
-  setCarNameUpdate: (carName: string) => void
-  setCarColor: (carName: string) => void
-  setCarColorUpdate: (carName: string) => void
-  setSelectedCarId: (carId: number) => void
+  carsList: CarModel[];
+  currentPage: number;
+  carName: string;
+  carNameUpdate: string;
+  carColor: string;
+  carColorUpdate: string;
+  selectedCarId: number;
+  addNewCar: (name: string, color: string) => Promise<void>;
+  deleteCar: (carId: number) => Promise<void>;
+  updateCar: (carId: number, name: string, color: string) => Promise<void>;
+  startEngine: (carId: number) => Promise<void>;
+  stopEngine: (carId: number) => Promise<void>;
+  startRace: () => Promise<void>;
+  resetRace: () => Promise<void>;
+  generateCars: () => Promise<void>;
+  clickPrev: () => void;
+  clickNext: () => void;
+  setCarName: (carName: string) => void;
+  setCarNameUpdate: (carName: string) => void;
+  setCarColor: (carName: string) => void;
+  setCarColorUpdate: (carName: string) => void;
+  setSelectedCarId: (carId: number) => void;
 }
 
 const Garage: React.FC<GarageProps> = ({
@@ -56,83 +56,83 @@ const Garage: React.FC<GarageProps> = ({
   setCarColorUpdate,
   setSelectedCarId,
 }) => {
-  const inputRefName = useRef<HTMLInputElement>(null)
-  const inputRefColor = useRef<HTMLInputElement>(null)
+  const inputRefName = useRef<HTMLInputElement>(null);
+  const inputRefColor = useRef<HTMLInputElement>(null);
 
   const handleChangeAddCarName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCarName(e.target.value)
-  }
+    setCarName(e.target.value);
+  };
 
   const handleChangeAddCarColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCarColor(e.target.value)
-  }
+    setCarColor(e.target.value);
+  };
 
   const handleChangeEditCarName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCarNameUpdate(e.target.value)
-  }
+    setCarNameUpdate(e.target.value);
+  };
 
   const handleChangeEditCarColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCarColorUpdate(e.target.value)
-  }
+    setCarColorUpdate(e.target.value);
+  };
 
   const handleSubmitAddCar = async (e: React.FormEvent) => {
-    e.preventDefault()
-    addNewCar(carName, carColor)
-  }
+    e.preventDefault();
+    addNewCar(carName, carColor);
+  };
 
   const handleSubmitUpdateCar = async (e: React.FormEvent) => {
-    e.preventDefault()
-    updateCar(selectedCarId, carNameUpdate, carColorUpdate)
-  }
+    e.preventDefault();
+    updateCar(selectedCarId, carNameUpdate, carColorUpdate);
+  };
 
   const handleClickEditCar = (id: number) => {
-    const selectedCar = carsList.find(carItem => carItem.id === id)
+    const selectedCar = carsList.find((carItem) => carItem.id === id);
     if (selectedCar) {
-      setCarNameUpdate(selectedCar.name)
-      setCarColorUpdate(selectedCar.color)
-      setSelectedCarId(id)
+      setCarNameUpdate(selectedCar.name);
+      setCarColorUpdate(selectedCar.color);
+      setSelectedCarId(id);
     }
-  }
+  };
 
   const handleClickDeleteCar = async (id: number) => {
-    deleteCar(id)
-  }
+    deleteCar(id);
+  };
 
   const handleClickStartEngine = async (id: number) => {
-    startEngine(id)
-  }
+    startEngine(id);
+  };
 
   const handleClickStopEngine = async (id: number) => {
-    stopEngine(id)
-  }
+    stopEngine(id);
+  };
 
   const handleClickGenerateCars = async () => {
-    generateCars()
-  }
+    generateCars();
+  };
 
   const handleClickPaginationPrev = () => {
-    clickPrev()
-  }
+    clickPrev();
+  };
 
   const handleClickPaginationNext = () => {
-    clickNext()
-  }
+    clickNext();
+  };
 
   const handleClickRace = () => {
-    startRace()
-  }
+    startRace();
+  };
 
   const handleClickReset = () => {
-    resetRace()
-  }
+    resetRace();
+  };
 
-  let carsOnCurrentPage: CarModel[] = []
+  let carsOnCurrentPage: CarModel[] = [];
 
   if (carsList) {
     carsOnCurrentPage = carsList?.slice(
       currentPage * carsPerPageInGarage,
-      currentPage * carsPerPageInGarage + carsPerPageInGarage
-    )
+      currentPage * carsPerPageInGarage + carsPerPageInGarage,
+    );
   }
 
   return (
@@ -142,6 +142,7 @@ const Garage: React.FC<GarageProps> = ({
         <div className="garage__race-controls">
           <button
             className="btn btn__green btn__race-controls btn__race-controls--race"
+            type="button"
             onClick={handleClickRace}
           >
             Race
@@ -160,6 +161,7 @@ const Garage: React.FC<GarageProps> = ({
           </button>
           <button
             className="btn btn__gray btn__race-controls btn__race-controls--reset"
+            type="button"
             onClick={handleClickReset}
           >
             Reset
@@ -193,7 +195,9 @@ const Garage: React.FC<GarageProps> = ({
             value={carColor}
           />
 
-          <button className="btn btn__green btn__add-new-car">Add New Car</button>
+          <button className="btn btn__green btn__add-new-car" type="button">
+            Add New Car
+          </button>
         </form>
 
         <form className="garage__menu-form garage__edit-car" onSubmit={handleSubmitUpdateCar}>
@@ -213,46 +217,54 @@ const Garage: React.FC<GarageProps> = ({
             onChange={handleChangeEditCarColor}
           />
 
-          <button className="btn btn__green btn__edit-car">Update Car</button>
+          <button className="btn btn__green btn__edit-car" type="button">
+            Update Car
+          </button>
         </form>
 
         <div className="garage__generate-cars">
-          <button className="btn btn__green btn__generate-cars" onClick={handleClickGenerateCars}>
+          <button
+            className="btn btn__green btn__generate-cars"
+            type="button"
+            onClick={handleClickGenerateCars}
+          >
             Generate Cars
           </button>
         </div>
       </div>
 
       <div className="garage__middle">
-        {carsOnCurrentPage.map(carItem => {
-          return (
-            <CarItem
-              key={carItem.id}
-              id={carItem.id}
-              name={carItem.name}
-              color={carItem.color}
-              isRaceFinished={carItem.isRaceFinished}
-              raceDuration={carItem.raceDuration}
-              isAnimated={carItem.isAnimated}
-              editCar={handleClickEditCar}
-              deleteCar={handleClickDeleteCar}
-              startEngine={handleClickStartEngine}
-              stopEngine={handleClickStopEngine}
-            />
-          )
-        })}
+        {carsOnCurrentPage.map((carItem) => (
+          <CarItem
+            key={carItem.id}
+            id={carItem.id}
+            name={carItem.name}
+            color={carItem.color}
+            isRaceFinished={carItem.isRaceFinished}
+            raceDuration={carItem.raceDuration}
+            isAnimated={carItem.isAnimated}
+            editCar={handleClickEditCar}
+            deleteCar={handleClickDeleteCar}
+            startEngine={handleClickStartEngine}
+            stopEngine={handleClickStopEngine}
+          />
+        ))}
       </div>
 
       <div className="garage__bottom">
         <div className="garage__total-cars">
           <h3>
             Total Cars:
-            <span> {carsList.length}</span>
+            <span>
+              {' '}
+              {carsList.length}
+            </span>
           </h3>
         </div>
         <div className="garage__pagination">
           <button
             className="btn btn__pagination"
+            type="button"
             onClick={handleClickPaginationPrev}
             disabled={currentPage === 0}
           >
@@ -261,6 +273,7 @@ const Garage: React.FC<GarageProps> = ({
           <span>{currentPage + 1}</span>
           <button
             className="btn btn__pagination"
+            type="button"
             onClick={handleClickPaginationNext}
             disabled={carsList.length <= carsPerPageInGarage * (currentPage + 1)}
           >
@@ -269,7 +282,7 @@ const Garage: React.FC<GarageProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Garage
+export default Garage;

@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
-import Garage from './components/Garage/Garage'
+import { useState, useEffect } from 'react';
+import Garage from './components/Garage/Garage';
 
-import { CarModel, WinnerModel } from './models/Models'
-import { modifyWinnerData } from './utils/WinnerUtils'
-import { generateRandomCarName, generateRandomHexColor } from './utils/RandomUtils'
+import { CarModel, WinnerModel } from './models/Models';
+import modifyWinnerData from './utils/WinnerUtils';
+import { generateRandomCarName, generateRandomHexColor } from './utils/RandomUtils';
 import {
   calculateRaceDuration,
   getRaceWinner,
   storeRaceWinnerResults,
   convertRaceTimeToSeconds,
-} from './utils/RaceUtils'
+} from './utils/RaceUtils';
 import {
   getCars,
   getWinners,
@@ -20,331 +20,368 @@ import {
   stopCarEngine,
   setEngineToDriveMode,
   deleteWinner,
-} from './utils/APIUtils'
-import { config } from './config/config'
-import './App.scss'
-import { getCarsOnCurrentPage } from './utils/CarUtils'
-import Winners from './components/Winners/Winners'
-import Modal from './components/Modal/Modal'
+} from './utils/APIUtils';
+import config from './config/config';
+import './App.scss';
+import { getCarsOnCurrentPage } from './utils/CarUtils';
+import Winners from './components/Winners/Winners';
+import Modal from './components/Modal/Modal';
 
-const { numberOfGeneratedCars, carsPerPageInGarage, carsPerPageInWinners } = config
+const { numberOfGeneratedCars, carsPerPageInGarage, carsPerPageInWinners } = config;
 
-function App() {
-  const [showGarage, setShowGarage] = useState<boolean>(true)
-  const [carsList, setCarsList] = useState<CarModel[]>([])
-  const [carName, setCarName] = useState<string>('')
-  const [carNameUpdate, setCarNameUpdate] = useState<string>('')
-  const [carColor, setCarColor] = useState<string>('#000000')
-  const [carColorUpdate, setCarColorUpdate] = useState<string>('#000000')
-  const [selectedCarId, setSelectedCarId] = useState<number>(0)
-  const [currentGaragePage, setCurrentGaragePage] = useState<number>(0)
-  const [currentWinnersPage, setCurrentWinnersPage] = useState<number>(0)
-  const [winnersList, setWinnersList] = useState<WinnerModel[]>([])
-  const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false)
-  const [winner, setWinner] = useState<CarModel | undefined>()
+const App = () => {
+  const [showGarage, setShowGarage] = useState<boolean>(true);
+  const [carsList, setCarsList] = useState<CarModel[]>([]);
+  const [carName, setCarName] = useState<string>('');
+  const [carNameUpdate, setCarNameUpdate] = useState<string>('');
+  const [carColor, setCarColor] = useState<string>('#000000');
+  const [carColorUpdate, setCarColorUpdate] = useState<string>('#000000');
+  const [selectedCarId, setSelectedCarId] = useState<number>(0);
+  const [currentGaragePage, setCurrentGaragePage] = useState<number>(0);
+  const [currentWinnersPage, setCurrentWinnersPage] = useState<number>(0);
+  const [winnersList, setWinnersList] = useState<WinnerModel[]>([]);
+  const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false);
+  const [winner, setWinner] = useState<CarModel | undefined>();
 
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const carsData = await getCars()
+        const carsData = await getCars();
         if (carsData) {
-          setCarsList(carsData)
+          setCarsList(carsData);
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
     const fetchWinners = async () => {
       try {
-        const carsData = await getCars()
-        const winnersData = await getWinners()
+        const carsData = await getCars();
+        const winnersData = await getWinners();
 
         if (winnersData && carsData) {
-          const modifiedWinnersData = modifyWinnerData(carsData, winnersData)
-          setWinnersList(modifiedWinnersData)
+          const modifiedWinnersData = modifyWinnerData(carsData, winnersData);
+          setWinnersList(modifiedWinnersData);
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
-    fetchCars()
-    fetchWinners()
-  }, [])
+    fetchCars();
+    fetchWinners();
+  }, []);
 
   function handleClickGarage() {
-    setShowGarage(true)
+    setShowGarage(true);
   }
 
   function handleClickWinners() {
-    setShowGarage(false)
+    setShowGarage(false);
   }
 
-  const handleChangeCarName = (carName: string) => {
-    setCarName(carName)
-  }
-  const handleChangeCarNameUpdate = (carName: string) => {
-    setCarNameUpdate(carName)
-  }
-  const handleChangeCarColor = (carName: string) => {
-    setCarColor(carName)
-  }
-  const handleChangeCarColorUpdate = (carName: string) => {
-    setCarColorUpdate(carName)
-  }
+  const filterCarsThatMadeIt = async (carsThatMadeIt: CarModel[]) => {
+    const carsOnCurrentPage = getCarsOnCurrentPage(
+      carsList,
+      currentGaragePage,
+      carsPerPageInGarage,
+    );
+    return Promise.all(
+      carsOnCurrentPage.map(async (car) => {
+        let duration: number;
+        setCarsList((prevList) => prevList.map((item) => {
+          if (item.id === car.id) {
+            return { ...item, isAnimated: true };
+          }
+          return item;
+        }));
+        try {
+          const engineStartData = await startCarEngine(car.id);
+          if (engineStartData) {
+            duration = calculateRaceDuration(engineStartData);
+            setCarsList((prevList) => prevList.map((item) => (item.id === car.id
+              ? { ...item, raceDuration: duration, isRaceFinished: true }
+              : item)));
+            try {
+              const driveModeData = await setEngineToDriveMode(car.id);
+              if (driveModeData.success) {
+                carsThatMadeIt.push({ ...car, raceDuration: duration });
+                setCarsList((prevList) => prevList.map((item) => (item.id === car.id
+                  ? { ...item, isRaceFinished: true, isAnimated: false }
+                  : item)));
+                return { ...car, raceDuration: duration };
+              }
+            } catch (err) {
+              setCarsList((prevList) => prevList.map((item) => (item.id === car.id
+                ? {
+                  ...item,
+                  raceDuration: 0,
+                  isRaceFinished: false,
+                  isAnimated: false,
+                }
+                : item)));
+            }
+          }
+          return null;
+        } catch (err) {
+          return null;
+        }
+      }),
+    );
+  };
 
-  const handleClickAddNewCar = async (carName: string, carColor: string) => {
+  const handleChangeCarName = (newCarName: string) => {
+    setCarName(newCarName);
+  };
+  const handleChangeCarNameUpdate = (newCarName: string) => {
+    setCarNameUpdate(newCarName);
+  };
+  const handleChangeCarColor = (newCarColor: string) => {
+    setCarColor(newCarColor);
+  };
+  const handleChangeCarColorUpdate = (newCarColor: string) => {
+    setCarColorUpdate(newCarColor);
+  };
+
+  const handleClickAddNewCar = async (newCarName: string, newCarColor: string) => {
     try {
-      const carData = await submitNewCar(carName, carColor)
+      const carData = await submitNewCar(newCarName, newCarColor);
       if (carData) {
-        setCarsList(prevList => [
+        setCarsList((prevList) => [
           ...prevList,
-          { ...carData, isAnimated: false, isFinished: false, raceDuration: 0 },
-        ])
+          {
+            ...carData,
+            isAnimated: false,
+            isFinished: false,
+            raceDuration: 0,
+          },
+        ]);
 
-        setCarName('')
-        setCarColor('#000000')
+        setCarName('');
+        setCarColor('#000000');
       }
     } catch (err) {
-      console.error("Couldn't add new car: ", err)
+      console.error("Couldn't add new car: ", err);
     }
-  }
+  };
 
   const handleClickDeleteCar = async (carId: number) => {
     try {
-      const responseOne = await deleteCar(carId)
-      const responseTwo = await deleteWinner(carId)
+      const responseOne = await deleteCar(carId);
+      const responseTwo = await deleteWinner(carId);
       if (responseOne?.ok) {
-        setCarsList(prevList => prevList.filter(item => item.id !== carId))
+        setCarsList((prevList) => prevList.filter((item) => item.id !== carId));
       }
 
       if (responseTwo?.ok) {
-        setWinnersList(prevList => prevList.filter(item => item.id !== carId))
+        setWinnersList((prevList) => prevList.filter((item) => item.id !== carId));
       }
     } catch (err) {
-      console.error("Couldn't delete the car: ", err)
+      console.error("Couldn't delete the car: ", err);
     }
-  }
+  };
 
-  const handleClickUpdateCar = async (carId: number, carName: string, carColor: string) => {
+  const handleClickUpdateCar = async (
+    carId: number,
+    updatedCarName: string,
+    updatedCarColor: string,
+  ) => {
     try {
-      const carData = await updateCar(carId, carName, carColor)
+      const carData = await updateCar(carId, updatedCarName, updatedCarColor);
       if (carData) {
-        setCarsList(prevList => prevList.map(car => (car.id === carId ? { ...carData } : car)))
-        setCarNameUpdate('')
-        setCarColorUpdate('#000000')
-        setSelectedCarId(0)
+        setCarsList((prevList) => prevList.map((car) => (car.id === carId ? { ...carData } : car)));
+        setCarNameUpdate('');
+        setCarColorUpdate('#000000');
+        setSelectedCarId(0);
       }
     } catch (err) {
-      console.error("Couldn't update the car: ", err)
+      console.error("Couldn't update the car: ", err);
     }
-  }
+  };
 
   const handleClickEditCar = (id: number) => {
-    setSelectedCarId(id)
-  }
+    setSelectedCarId(id);
+  };
 
   const handleClickStartEngine = async (carId: number) => {
-    setCarsList(prevList =>
-      prevList.map(item => (item.id === carId ? { ...item, isAnimated: true } : item))
-    )
+    setCarsList((prevList) => prevList.map((item) => {
+      if (item.id === carId) {
+        return { ...item, isAnimated: true };
+      }
+      return item;
+    }));
 
     try {
-      const carEngine = await startCarEngine(carId)
+      const carEngine = await startCarEngine(carId);
 
       if (carEngine) {
-        const duration = carEngine.velocity ? carEngine.distance / carEngine.velocity : 0
-        setCarsList(prevList =>
-          prevList.map(item =>
-            item.id === carId ? { ...item, raceDuration: duration, isRaceFinished: true } : item
-          )
-        )
+        const duration = carEngine.velocity ? carEngine.distance / carEngine.velocity : 0;
+        setCarsList((prevList) => prevList.map((item) => {
+          if (item.id === carId) {
+            return { ...item, raceDuration: duration, isRaceFinished: true };
+          }
+          return item;
+        }));
       }
     } catch (err) {
-      console.error("Couldn't start the engine: ", err)
+      console.error("Couldn't start the engine: ", err);
     }
 
     try {
-      await setEngineToDriveMode(carId)
+      await setEngineToDriveMode(carId);
     } catch (err) {
-      setCarsList(prevList =>
-        prevList.map(item =>
-          item.id === carId
-            ? { ...item, raceDuration: 0, isRaceFinished: false, isAnimated: false }
-            : item
-        )
-      )
+      setCarsList((prevList) => prevList.map((item) => (item.id === carId
+        ? {
+          ...item,
+          raceDuration: 0,
+          isRaceFinished: false,
+          isAnimated: false,
+        }
+        : item)));
 
-      console.error('Error with the drive mode: ', err)
+      console.error('Error with the drive mode: ', err);
     }
-  }
+  };
 
   const handleClickRace = async () => {
-    const carsThatMadeIt: CarModel[] = []
+    const carsThatMadeIt: CarModel[] = [];
 
     try {
-      const filteredCars: (CarModel | null)[] = await filterCarsThatMadeIt(carsThatMadeIt)
-      const results: (CarModel | null)[] = filteredCars?.filter((item: CarModel | null): boolean =>
-        Boolean(item)
-      )
-      let winner: CarModel | undefined = getRaceWinner(results)
+      const filteredCars: (CarModel | null)[] = await filterCarsThatMadeIt(carsThatMadeIt);
+      const results: (CarModel | null)[] = filteredCars?.filter((item) => Boolean(item));
+      const winnerCar: CarModel | undefined = getRaceWinner(results);
 
-      if (winner) {
-        setWinner(winner)
-        setShowWinnerModal(true)
-        await storeRaceWinnerResults(winnersList, winner)
-        const winnersData = await getWinners()
-        const modifiedWinnersData = modifyWinnerData(carsList, winnersData)
-        setWinnersList(modifiedWinnersData)
+      if (winnerCar) {
+        setWinner(winnerCar);
+        setShowWinnerModal(true);
+        await storeRaceWinnerResults(winnersList, winnerCar);
+        const winnersData = await getWinners();
+        if (winnersData) {
+          const modifiedWinnersData = modifyWinnerData(carsList, winnersData);
+          setWinnersList(modifiedWinnersData);
+        }
       }
     } catch (err) {
-      console.error('error with filteredCars: ', err)
+      console.error('error with filteredCars: ', err);
     }
-  }
+  };
 
   const handleClickReset = async () => {
     if (carsList) {
       const carsOnCurrentPage = getCarsOnCurrentPage(
         carsList,
         currentGaragePage,
-        carsPerPageInGarage
-      )
+        carsPerPageInGarage,
+      );
 
-      carsOnCurrentPage.forEach(async car => {
+      carsOnCurrentPage.forEach(async (car) => {
         try {
-          const carEngineData = await stopCarEngine(car.id)
+          const carEngineData = await stopCarEngine(car.id);
           if (carEngineData) {
-            setCarsList(prevList =>
-              prevList.map(item =>
-                item.id === car.id
-                  ? { ...item, isAnimated: false, isRaceFinished: false, raceDuration: 0 }
-                  : item
-              )
-            )
+            setCarsList((prevList) => prevList.map((item) => (item.id === car.id
+              ? {
+                ...item,
+                isAnimated: false,
+                isRaceFinished: false,
+                raceDuration: 0,
+              }
+              : item)));
           }
         } catch (err) {
-          console.error("Couldn't stop the engine: ", err)
+          console.error("Couldn't stop the engine: ", err);
         }
-      })
+      });
     }
-  }
+  };
 
   const handleClickStopEngine = async (carId: number) => {
     try {
-      const engineData = await stopCarEngine(carId)
+      const engineData = await stopCarEngine(carId);
       if (engineData) {
-        setCarsList(prevList =>
-          prevList.map(item =>
-            item.id === carId
-              ? { ...item, isAnimated: false, isRaceFinished: false, raceDuration: 0 }
-              : item
-          )
-        )
+        setCarsList((prevList) => prevList.map((item) => (item.id === carId
+          ? {
+            ...item,
+            isAnimated: false,
+            isRaceFinished: false,
+            raceDuration: 0,
+          }
+          : item)));
       }
     } catch (err) {
-      console.error("Couldn't stop the engine: ", err)
+      console.error("Couldn't stop the engine: ", err);
     }
-  }
+  };
 
   const handleClickGenerateCars = async () => {
-    for (let i = 0; i < numberOfGeneratedCars; i++) {
-      try {
-        const newCarData = await submitNewCar(generateRandomCarName(), generateRandomHexColor())
-        setCarsList(prevList => [...prevList, newCarData])
-      } catch (err) {
-        console.error("Couldn't create a car: ", err)
-      }
+    const carPromises = [];
+    for (let i = 0; i < numberOfGeneratedCars; i += 1) {
+      const randomCarName = generateRandomCarName();
+      const randomCarColor = generateRandomHexColor();
+      carPromises.push(submitNewCar(randomCarName, randomCarColor));
     }
-  }
+
+    try {
+      const newCarData = await Promise.all(carPromises);
+      setCarsList((prevList) => {
+        const newList = [...prevList];
+        for (let i = 0; i < newCarData.length; i += 1) {
+          if (newCarData[i] !== null) {
+            newList.push(newCarData[i]);
+          }
+        }
+        return newList;
+      });
+    } catch (err) {
+      console.error('Error creating cars:', err);
+    }
+  };
 
   const handleClickGaragePrev = () => {
     if (currentGaragePage > 0) {
-      setCurrentGaragePage(prevVal => prevVal - 1)
+      setCurrentGaragePage((prevVal) => prevVal - 1);
     }
-  }
+  };
 
   const handleClickGarageNext = () => {
-    const result = carsList.length > carsPerPageInGarage * (currentGaragePage + 1)
+    const result = carsList.length > carsPerPageInGarage * (currentGaragePage + 1);
     if (result) {
-      setCurrentGaragePage(prevVal => prevVal + 1)
+      setCurrentGaragePage((prevVal) => prevVal + 1);
     }
-  }
+  };
 
   const handleClickWinnersPrev = () => {
     if (currentWinnersPage > 0) {
-      setCurrentWinnersPage(prevVal => prevVal - 1)
+      setCurrentWinnersPage((prevVal) => prevVal - 1);
     }
-  }
+  };
 
   const handleClickWinnersNext = () => {
-    const result = winnersList.length > carsPerPageInWinners * (currentWinnersPage + 1)
+    const result = winnersList.length > carsPerPageInWinners * (currentWinnersPage + 1);
     if (result) {
-      setCurrentWinnersPage(prevVal => prevVal + 1)
+      setCurrentWinnersPage((prevVal) => prevVal + 1);
     }
-  }
-
-  const filterCarsThatMadeIt = async (carsThatMadeIt: CarModel[]) => {
-    const carsOnCurrentPage = getCarsOnCurrentPage(carsList, currentGaragePage, carsPerPageInGarage)
-    return await Promise.all(
-      carsOnCurrentPage.map(async car => {
-        let duration: number
-        setCarsList(prevList =>
-          prevList.map(item => (item.id === car.id ? { ...item, isAnimated: true } : item))
-        )
-        try {
-          const engineStartData = await startCarEngine(car.id)
-          if (engineStartData) {
-            duration = calculateRaceDuration(engineStartData)
-            setCarsList(prevList =>
-              prevList.map(item =>
-                item.id === car.id
-                  ? { ...item, raceDuration: duration, isRaceFinished: true }
-                  : item
-              )
-            )
-            try {
-              const driveModeData = await setEngineToDriveMode(car.id)
-              if (driveModeData.success) {
-                carsThatMadeIt.push({ ...car, raceDuration: duration })
-                setCarsList(prevList =>
-                  prevList.map(item =>
-                    item.id === car.id ? { ...item, isRaceFinished: true, isAnimated: false } : item
-                  )
-                )
-                return { ...car, raceDuration: duration }
-              }
-            } catch (err) {
-              setCarsList(prevList =>
-                prevList.map(item =>
-                  item.id === car.id
-                    ? { ...item, raceDuration: 0, isRaceFinished: false, isAnimated: false }
-                    : item
-                )
-              )
-            }
-          }
-          return null
-        } catch (err) {
-          return null
-        }
-      })
-    )
-  }
+  };
 
   const handleClickCloseModal = () => {
-    setShowWinnerModal(false)
-  }
+    setShowWinnerModal(false);
+  };
 
   return (
-    <>
+    <div className="async-race">
       <Modal isOpen={showWinnerModal} closeModal={handleClickCloseModal}>
         <h3 className="modal__title">Winner</h3>
         <div className="modal__winner-name">
-          Model: <span>{winner?.name}</span>
+          Model:
+          {' '}
+          <span>{winner?.name}</span>
         </div>
         <div className="modal__winner-time">
-          Time: <span>{convertRaceTimeToSeconds(winner?.raceDuration)}sec</span>
+          Time:
+          <span>
+            {convertRaceTimeToSeconds(winner?.raceDuration)}
+            sec
+          </span>
         </div>
       </Modal>
       <div className="top">
@@ -354,12 +391,14 @@ function App() {
               <ul className="top__menu-list">
                 <li
                   className={showGarage ? 'top__menu-item active' : 'top__menu-item'}
+                  role="presentation"
                   onClick={handleClickGarage}
                 >
                   Garage
                 </li>
                 <li
                   className={!showGarage ? 'top__menu-item active' : 'top__menu-item'}
+                  role="presentation"
                   onClick={handleClickWinners}
                 >
                   Winners
@@ -408,8 +447,8 @@ function App() {
           )}
         </div>
       </div>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+export default App;

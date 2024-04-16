@@ -1,34 +1,36 @@
-import React from 'react'
-import WinnersItem from '../WinnersItem/WinnersItem'
-import { WinnerModel } from '../../models/Models'
-import { config } from '../../config/config'
-import './Winners.scss'
+import React from 'react';
+import WinnersItem from '../WinnersItem/WinnersItem';
+import { WinnerModel } from '../../models/Models';
+import config from '../../config/config';
+import './Winners.scss';
 
-const { carsPerPageInWinners } = config
+const { carsPerPageInWinners } = config;
 
 interface WinnersProps {
-  winnersList: WinnerModel[]
-  currentPage: number
-  clickPrev: () => void
-  clickNext: () => void
+  winnersList: WinnerModel[];
+  currentPage: number;
+  clickPrev: () => void;
+  clickNext: () => void;
 }
 
-const Winners: React.FC<WinnersProps> = ({ winnersList, currentPage, clickPrev, clickNext }) => {
+const Winners: React.FC<WinnersProps> = ({
+  winnersList, currentPage, clickPrev, clickNext,
+}) => {
   const handleClickPaginationPrev = () => {
-    clickPrev()
-  }
+    clickPrev();
+  };
 
   const handleClickPaginationNext = () => {
-    clickNext()
-  }
+    clickNext();
+  };
 
-  let winnersOnCurrentPage: WinnerModel[] = []
+  let winnersOnCurrentPage: WinnerModel[] = [];
 
   if (winnersList) {
     winnersOnCurrentPage = winnersList?.slice(
       currentPage * carsPerPageInWinners,
-      currentPage * carsPerPageInWinners + carsPerPageInWinners
-    )
+      currentPage * carsPerPageInWinners + carsPerPageInWinners,
+    );
   }
 
   return (
@@ -44,30 +46,29 @@ const Winners: React.FC<WinnersProps> = ({ winnersList, currentPage, clickPrev, 
       </div>
 
       <div className="winners__content">
-        {winnersOnCurrentPage.map(winnerItem => {
-          return (
-            <WinnersItem
-              key={winnerItem.id}
-              id={String(winnerItem.id)}
-              carColor={winnerItem.color}
-              modelName={winnerItem.modelName}
-              wins={String(winnerItem.wins)}
-              bestTime={String(winnerItem.time)}
-            />
-          )
-        })}
+        {winnersOnCurrentPage.map((winnerItem) => (
+          <WinnersItem
+            key={winnerItem.id}
+            id={String(winnerItem.id)}
+            carColor={winnerItem.color}
+            modelName={winnerItem.modelName}
+            wins={String(winnerItem.wins)}
+            bestTime={String(winnerItem.time)}
+          />
+        ))}
       </div>
 
       <div className="winners__bottom">
         <div className="winners__total-cars">
           <h3>
             Total Cars:
-            <span> {winnersList.length}</span>
+            <span>{winnersList.length}</span>
           </h3>
         </div>
         <div className="winners__pagination">
           <button
             className="btn btn__pagination"
+            type="button"
             onClick={handleClickPaginationPrev}
             disabled={currentPage === 0}
           >
@@ -76,6 +77,7 @@ const Winners: React.FC<WinnersProps> = ({ winnersList, currentPage, clickPrev, 
           <span>{currentPage + 1}</span>
           <button
             className="btn btn__pagination"
+            type="button"
             onClick={handleClickPaginationNext}
             disabled={winnersList.length <= carsPerPageInWinners * (currentPage + 1)}
           >
@@ -84,7 +86,7 @@ const Winners: React.FC<WinnersProps> = ({ winnersList, currentPage, clickPrev, 
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Winners
+export default Winners;
