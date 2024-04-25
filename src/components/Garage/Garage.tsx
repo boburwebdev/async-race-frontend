@@ -195,7 +195,7 @@ const Garage: React.FC<GarageProps> = ({
             value={carColor}
           />
 
-          <button className="btn btn__green btn__add-new-car" type="button">
+          <button className="btn btn__green btn__add-new-car" type="submit">
             Add New Car
           </button>
         </form>
@@ -217,7 +217,7 @@ const Garage: React.FC<GarageProps> = ({
             onChange={handleChangeEditCarColor}
           />
 
-          <button className="btn btn__green btn__edit-car" type="button">
+          <button className="btn btn__green btn__edit-car" type="submit">
             Update Car
           </button>
         </form>
